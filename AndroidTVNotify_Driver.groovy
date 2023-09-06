@@ -88,7 +88,7 @@ void deviceNotification(String text, String title) {
 
   def headers = [:];
   headers.put("Content-Type", "application/json");
-  def bodyJson = "{\"duration\": \"${DisplayDuration}\", \"position\": ${Position}, \"title\": \"${title}", \"titleColor\": \"${TitleColor}\", \"titleSize\": ${TitleSize}, \"message\": \"${text}\", \"messageColor\": \"${MessageColor}\", \"messageSize\": ${MessageSize}, \"backgroundColor\": \"${BackgroundColor}\" }";
+  def bodyJson = "{\"duration\": \"${DisplayDuration}\", \"position\": ${Position}, \"title\": \"${title}\", \"titleColor\": \"${TitleColor}\", \"titleSize\": ${TitleSize}, \"message\": \"${text}\", \"messageColor\": \"${MessageColor}\", \"messageSize\": ${MessageSize}, \"backgroundColor\": \"${BackgroundColor}\" }";
   def postParams = [ 
         uri: "http://${TVIPAddress}:7979/notify",
         headers: headers,
