@@ -171,7 +171,9 @@ void customNotificationFull(String pMessageText, long pDisplayDuration, String p
   int vDuration = (pDisplayDuration <= 0 ? 10 : pDisplayDuration);
   // Construct the media (image) section, if an image URI has been configured
   String vMediaOutput = "";
-  if(pImageURI != "" && pImageURI != null) { vMediaOutput = ", \"media\": { \"image\": {\"uri\": \"${pImageURI}\", \"width\": ${pImageWidth} } }" };
+  String vImageURINoWS = "";
+  if(pImageURI != null) { vImageURINoWS = pImageURI.replace(' ','') }
+  if(vImageURINoWS != "") { vMediaOutput = ", \"media\": { \"image\": {\"uri\": \"${vImageURINoWS}\", \"width\": ${pImageWidth} } }" };
 
   // Prepare the HTTP Details
 
