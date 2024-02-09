@@ -156,7 +156,7 @@ void customNotificationFull(String pMessageText, long pDisplayDuration, String p
   int vDuration = (pDisplayDuration <= 0 ? 10 : pDisplayDuration);
   // Construct the media (image) section, if an image URI has been configured
   String vMediaOutput = "";
-  if(pImageURI != "") { vMediaOutput = "\"media\": { \"image\": {\"uri\": \"${pImageURI}\", \"width\": ${pImageWidth} } }" };
+  if(pImageURI != "") { vMediaOutput = ", \"media\": { \"image\": {\"uri\": \"${pImageURI}\", \"width\": ${pImageWidth} } }" };
 
   // Prepare the HTTP Details
 
