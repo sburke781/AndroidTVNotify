@@ -29,7 +29,7 @@ metadata {
         
         //Notification Capability Command
         command 'deviceNotification', [[name:'text', type: 'STRING', description: 'Enter the notification text' ] ]
-        command "customNotificationTitle", [[name:'text', type: 'STRING', description: 'Enter the notification text' ], [name:'title', type: 'STRING', description: 'Enter the notification title' ], [name:'DebugMessage', type: 'INTEGER', description: 'Zero = Send Notification to TV, 1 = Log Only' ] ]
+        command "customNotificationTitle", [[name:'text', type: 'STRING', description: 'Enter the notification text' ], [name:'title', type: 'STRING', description: 'Enter the notification title', defaultValue: 'Hubitat Notification' ], [name:'DebugMessage', type: 'INTEGER', description: 'Zero = Send Notification to TV, 1 = Log Only', defaultValue: 0 ] ]
         
     }    
     
@@ -38,17 +38,17 @@ metadata {
     
       // TV Preferences
       input(name: "TVIPAddress", type: "string", title:"Android TV IP Address", displayDuringSetup: true, defaultValue: "")
-      input(name: "Port", type: "integer", title:"Android TV Notify Port Number", displayDuringSetup: true, defaultValue: 7979)
-      input(name: "DefaultDuration", type: "integer", title:"Default Duration to Display Notification", displayDuringSetup: true, defaultValue: 30)
+      input(name: "Port", type: "number", title:"Android TV Notify Port Number", displayDuringSetup: true, defaultValue: 7979)
+      input(name: "DefaultDuration", type: "number", title:"Default Duration to Display Notification", displayDuringSetup: true, defaultValue: 30)
       input(name: "DefaultPosition", type: "enum", title:"Default Position of Notification", displayDuringSetup: true, defaultValue: "Top Right", required: true, options: ["Top Left","Top Right","Bottom Left","Bottom Right","Centre"])
       input(name: "DefaultTitle", type: "string", title:"Default Notification Title", displayDuringSetup: true, defaultValue: "Hubitat Notification")
       input(name: "DefaultTitleColor", type: "string", title:"Default Title Color", description: "Hex Value Starting with #", displayDuringSetup: true, defaultValue: "#")
-      input(name: "DefaultTitleSize", type: "integer", title:"Default Title Font Size", displayDuringSetup: true, defaultValue: 20)
+      input(name: "DefaultTitleSize", type: "number", title:"Default Title Font Size", displayDuringSetup: true, defaultValue: 20)
       input(name: "DefaultMessageColor", type: "string", title:"Default Message Text Color", description: "Hex Value Starting with #", displayDuringSetup: true, defaultValue: "#")
-      input(name: "DefaultMessageSize", type: "integer", title:"Default Message Text Font Size", displayDuringSetup: true, defaultValue: 14)
+      input(name: "DefaultMessageSize", type: "number", title:"Default Message Text Font Size", displayDuringSetup: true, defaultValue: 14)
       input(name: "DefaultBackgroundColor", type: "string", title:"Default Background Color", description: "Hex Value Starting with #",  displayDuringSetup: true, defaultValue: "#")
       input(name: "DefaultImageURI", type: "string", title:"Default Image URI",  displayDuringSetup: true, defaultValue: "")
-      input(name: "DefaultImageWidth", type: "integer", title:"Default Image Width", displayDuringSetup: true, defaultValue: 480)
+      input(name: "DefaultImageWidth", type: "number", title:"Default Image Width", displayDuringSetup: true, defaultValue: 480)
 
       // Logging Preferences
       input(name: "DebugLogging", type: "bool", title:"Enable Debug Logging",                   displayDuringSetup: true, defaultValue: false)
@@ -124,6 +124,15 @@ void deviceNotification(String pMessageText) {
 }
 
 // Custom Device Notification - Title
+
+void customNotificationTitle(String pMessageText) {
+  customNotificationTitle(pMessageText,  DefaultTitle, 0);
+}
+
+void customNotificationTitle(String pMessageText, String pMessageTitle) {
+  customNotificationTitle(pMessageText,  pMessageTitle, 0);
+}
+
 //   Uses the defaults defined in the device preference settings, plus the message text and title passed in
 //   Debug Notification Option used to just log the notification details without sending it to the TV
 void customNotificationTitle(String pMessageText, String pMessageTitle, int pdebugNotification) {
@@ -132,10 +141,16 @@ void customNotificationTitle(String pMessageText, String pMessageTitle, int pdeb
 }
 
 // Custom Device Notification - Full
+
+void customNotificationFull(String pMessageText, long pDisplayDuration, String pPosition, String pTitle, String pTitleColor, long pTitleSize, String pMessageColor, long pMessageSize, String pBackgroundColor, String pImageURI, long pImageWidth) {
+
+  customNotificationFull(pMessageText, pDisplayDuration, pPosition, pTitle, pTitleColor, pTitleSize, pMessageColor, pMessageSize, pBackgroundColor, pImageURI, pImageWidth, 0);
+}
+
 //   Allows complete control over the notification sent
 //   Ignores any defaults (apart from the TV IP Address), using whatever details are passed into the method
 //   Debug Notification Option used to just log the notification details without sending it to the TV
-void customNotificationFull(String pMessageText, long pDisplayDuration, String pPosition, String pTitle, String pTitleColor, long pTitleSize, String pMessageColor, long pMessageSize, String pBackgroundColor, String pImageURI, long pImageWidth, long pdebugNotification) {
+void customNotificationFull(String pMessageText, long pDisplayDuration, String pPosition, String pTitle, String pTitleColor, long pTitleSize, String pMessageColor, long pMessageSize, String pBackgroundColor, String pImageURI, long pImageWidth, int pdebugNotification) {
   
   // Checks
   if (pMessageText == "") { errorLog("customNotificationFull: Error - Empty Message Provided");
@@ -175,7 +190,7 @@ void customNotificationFull(String pMessageText, long pDisplayDuration, String p
   if (DebugLogging || pDebugNotification) {
     // Log the Notification for debugging purposes
     log.debug("customNotificationFull: Debug Notification Only, this will not be sent to the TV");
-    log.debug("customNotificationFull: HTTP POST Parameters: ${pPostParams}");
+    log.debug("customNotificationFull: HTTP POST Parameters: ${postParams}");
   }
 
   // Send the Notification
