@@ -87,7 +87,7 @@ curl --header "Content-Type: application/json" --request POST --data @text.json 
 int translatePosition(String pPosition) {
     //Translates a text representation of the notification position into the integer values expected by the App on the TV
 
-    int posInt = 2;    // Default to Top Right
+    int posInt = 0;    // Default to Top Right
 
     switch (pPosition)
     {
@@ -167,8 +167,21 @@ void customNotificationFull(String pMessageText, long pDisplayDuration, String p
 
   // Translate the text-based position passed in to the appropriate integer value
   int vPosNum = translatePosition(pPosition);
+  if (DebugLogging || pDebugNotification) {
+    log.debug("customNotificationFull: pPosition translated from ${pPosition} to ${vPosNum}");
+  }
   // If the duration is for some reason less than zero, set it to 10 seconds
   int vDuration = (pDisplayDuration <= 0 ? 10 : pDisplayDuration);
+
+  def vTitleColor = pTitleColor;
+  if(pTitleColor == "" || pTitleColor == "#") { vTitleColor = "#FFFFFF" }
+
+  def vMessageColor = pMessageColor;
+  if(pMessageColor == "" || pMessageColor == "#") { vMessageColor = "#FFFFFF" }
+
+  def vBackgroundColor = pBackgroundColor;
+  if(pBackgroundColor == "" || pBackgroundColor == "#") { vBackgroundColor = "#CC000000" }
+
   // Construct the media (image) section, if an image URI has been configured
   String vMediaOutput = "";
   String vImageURINoWS = "";
@@ -179,7 +192,7 @@ void customNotificationFull(String pMessageText, long pDisplayDuration, String p
 
   def headers = [:];
   headers.put("Content-Type", "application/json");
-  def bodyJson = "{\"duration\": ${vDuration}, \"position\": ${vPosNum}, \"title\": \"${URLEncoder.encode(pTitle)}\", \"titleColor\": \"${pTitleColor}\", \"titleSize\": ${pTitleSize}, \"message\": \"${URLEncoder.encode(pMessageText)}\", \"messageColor\": \"${pMessageColor}\", \"messageSize\": ${pMessageSize}, \"backgroundColor\": \"${pBackgroundColor}\" ${vMediaOutput} }";
+  def bodyJson = "{\"duration\": ${vDuration}, \"position\": ${vPosNum}, \"title\": \"${URLEncoder.encode(pTitle)}\", \"titleColor\": \"${vTitleColor}\", \"titleSize\": ${pTitleSize}, \"message\": \"${URLEncoder.encode(pMessageText)}\", \"messageColor\": \"${vMessageColor}\", \"messageSize\": ${pMessageSize}, \"backgroundColor\": \"${vBackgroundColor}\" ${vMediaOutput} }";
   def postParams = [ 
         uri: "http://${TVIPAddress}:${Port}/notify",
         headers: headers,
